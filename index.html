@@ -1,0 +1,160 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Control Hogar</title>
+  <meta name="description" content="Control de gastos del hogar">
+  <meta name="theme-color" content="#F5F4EF" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121614" media="(prefers-color-scheme: dark)">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Hogar">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="format-detection" content="telephone=no">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+  <link rel="stylesheet" href="styles.css?v=1.0.0">
+</head>
+<body>
+  <!-- Pantalla de carga -->
+  <section id="v-cargando" class="vista centro">
+    <div class="marca-logo" aria-hidden="true"></div>
+    <div class="spinner" aria-label="Cargando"></div>
+  </section>
+
+  <!-- Inicio de sesión -->
+  <section id="v-login" class="vista centro" hidden>
+    <div class="login">
+      <div class="marca-logo grande" aria-hidden="true"></div>
+      <h1>Control Hogar</h1>
+      <p class="sutil">Los gastos de la casa, claros y al día.</p>
+      <button id="btn-google" class="btn btn-google" type="button">
+        <svg viewBox="0 0 48 48" width="20" height="20" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.6 2.4 30.2 0 24 0 14.6 0 6.6 5.4 2.6 13.3l7.8 6C12.3 13.6 17.6 9.5 24 9.5z"/><path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.9-2.2 5.3-4.6 7l7.4 5.7c4.3-4 6.9-9.9 6.9-17.2z"/><path fill="#FBBC05" d="M10.4 28.7c-.5-1.4-.8-3-.8-4.7s.3-3.3.8-4.7l-7.8-6C.9 16.6 0 20.2 0 24s.9 7.4 2.6 10.7l7.8-6z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.8-5.8l-7.4-5.7c-2.1 1.4-4.8 2.3-8.4 2.3-6.4 0-11.7-4.1-13.6-9.8l-7.8 6C6.6 42.6 14.6 48 24 48z"/></svg>
+        Continuar con Google
+      </button>
+      <p id="login-error" class="error" role="alert" hidden></p>
+      <p class="sutil peque">Acceso solo para los correos autorizados del hogar.</p>
+    </div>
+  </section>
+
+  <!-- Inicio -->
+  <section id="v-inicio" class="vista" hidden>
+    <header class="barra">
+      <div>
+        <p class="sutil peque" id="saludo">Hola</p>
+        <h1 id="titulo-mes">—</h1>
+      </div>
+      <div class="barra-acciones">
+        <button class="icono" id="btn-recargar" type="button" aria-label="Actualizar">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M20 12a8 8 0 1 1-2.34-5.66M20 4v5h-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="avatar" id="btn-perfil" type="button" aria-label="Perfil">N</button>
+      </div>
+    </header>
+
+    <main class="contenido">
+      <div id="aviso-sueldo"></div>
+
+      <article class="tarjeta hero">
+        <p class="etiqueta">Por pagar este mes</p>
+        <p class="cifra-xl" id="k-pendiente">—</p>
+        <div class="barra-progreso" role="progressbar" aria-label="Avance de pagos" id="k-barra"><span></span></div>
+        <div class="fila-kpi">
+          <div><p class="etiqueta">Presupuesto</p><p class="cifra" id="k-presupuesto">—</p></div>
+          <div><p class="etiqueta">Pagado</p><p class="cifra" id="k-pagado">—</p></div>
+          <div><p class="etiqueta">Ingresos</p><p class="cifra" id="k-ingresos">—</p></div>
+        </div>
+      </article>
+
+      <h2 class="seccion">Rubros</h2>
+      <ul class="lista tarjeta" id="lista-rubros"></ul>
+
+      <h2 class="seccion">Aportes</h2>
+      <div class="aportes" id="lista-aportes"></div>
+
+      <h2 class="seccion">Últimos movimientos</h2>
+      <ul class="lista tarjeta" id="lista-movs"></ul>
+      <p class="sutil peque pie">Datos de tu hoja de Google · <span id="hora-act"></span></p>
+    </main>
+
+    <button class="fab" id="btn-gasto" type="button">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      Gasto
+    </button>
+  </section>
+
+  <!-- Hoja: nuevo gasto -->
+  <div class="hoja-fondo" id="h-gasto" hidden>
+    <form class="hoja" id="f-gasto" novalidate autocomplete="off">
+      <div class="hoja-asa" aria-hidden="true"></div>
+      <header class="hoja-cab">
+        <button type="button" class="enlace" data-cerrar>Cancelar</button>
+        <h2>Nuevo gasto</h2>
+        <span class="hueco"></span>
+      </header>
+
+      <label class="monto">
+        <span class="monto-signo">$</span>
+        <input id="g-valor" inputmode="numeric" enterkeyhint="done" placeholder="0" aria-label="Valor del gasto" required>
+      </label>
+
+      <p class="campo-tit">Rubro</p>
+      <div class="chips" id="g-rubros" role="radiogroup" aria-label="Rubro"></div>
+
+      <p class="campo-tit">¿Quién pagó?</p>
+      <div class="segmento" id="g-persona" role="radiogroup" aria-label="Persona"></div>
+
+      <div class="dos-col">
+        <label class="campo"><span class="campo-tit">Fecha</span><input type="date" id="g-fecha" required></label>
+        <label class="campo"><span class="campo-tit">Medio de pago <em>opcional</em></span>
+          <select id="g-medio"><option value="">—</option></select></label>
+      </div>
+      <label class="campo"><span class="campo-tit">Descripción <em>opcional</em></span>
+        <input id="g-desc" maxlength="200" placeholder="Ej.: D1, factura de octubre…"></label>
+
+      <p class="error" id="g-error" role="alert" hidden></p>
+      <button class="btn btn-primario" id="g-guardar" type="submit">Guardar gasto</button>
+    </form>
+  </div>
+
+  <!-- Hoja: sueldo -->
+  <div class="hoja-fondo" id="h-sueldo" hidden>
+    <form class="hoja" id="f-sueldo" novalidate autocomplete="off">
+      <div class="hoja-asa" aria-hidden="true"></div>
+      <header class="hoja-cab">
+        <button type="button" class="enlace" data-cerrar>Cancelar</button>
+        <h2 id="s-titulo">Sueldo del mes</h2>
+        <span class="hueco"></span>
+      </header>
+      <p class="campo-tit">¿De quién?</p>
+      <div class="segmento" id="s-persona" role="radiogroup" aria-label="Persona"></div>
+      <label class="monto">
+        <span class="monto-signo">$</span>
+        <input id="s-valor" inputmode="numeric" enterkeyhint="done" placeholder="0" aria-label="Valor del sueldo" required>
+      </label>
+      <p class="sutil peque">Con los sueldos de ambos se calcula el porcentaje de aporte de cada uno.</p>
+      <p class="error" id="s-error" role="alert" hidden></p>
+      <button class="btn btn-primario" id="s-guardar" type="submit">Guardar sueldo</button>
+    </form>
+  </div>
+
+  <!-- Diálogo de confirmación -->
+  <div class="dialogo-fondo" id="dlg" hidden>
+    <div class="dialogo" role="alertdialog" aria-modal="true" aria-labelledby="dlg-t">
+      <h3 id="dlg-t">¿Confirmar?</h3>
+      <p id="dlg-m"></p>
+      <div class="dialogo-botones">
+        <button class="btn btn-sec" id="dlg-no" type="button">Cancelar</button>
+        <button class="btn btn-primario" id="dlg-si" type="button">Sí, guardar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="config.js?v=1.0.0"></script>
+  <script src="app.js?v=1.0.0"></script>
+</body>
+</html>
